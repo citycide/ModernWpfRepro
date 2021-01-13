@@ -1,0 +1,98 @@
+<rxui:ReactiveWindow
+  x:Class="ModernWpfRepro.Views.MainWindow"
+  x:TypeArguments="vm:MainViewModel"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:rxui="http://reactiveui.net"
+  xmlns:ui="http://schemas.modernwpf.com/2019"
+  xmlns:dt="clr-namespace:ModernWpfRepro.DataTemplates"
+  xmlns:vm="clr-namespace:ModernWpfRepro.ViewModels"
+  mc:Ignorable="d"
+  Title="ModernWpfRepro"
+  Width="400" Height="200"
+  WindowStartupLocation="CenterScreen"
+  ui:WindowHelper.UseModernWindowStyle="True">
+  <ScrollViewer>
+    <ScrollViewer.Resources>
+      <DataTemplate x:Key="FilterEqualDataTemplate">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+          </Grid.ColumnDefinitions>
+
+          <ComboBox
+            Grid.Column="0" Margin="5,0"
+            HorizontalAlignment="Stretch" VerticalAlignment="Center"
+            ToolTip="Type of filter to apply"
+            ItemsSource="{Binding
+              Path=ViewModel.FilterTypes,
+              RelativeSource={RelativeSource
+                AncestorType=Window
+              }
+            }"
+            SelectedValue="Equal"
+            SelectedValuePath="Key"
+            DisplayMemberPath="Value"
+            SelectionChanged="FilterTypeChangedImpl" />
+        </Grid>
+      </DataTemplate>
+
+      <DataTemplate x:Key="FilterOneOfDataTemplate">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="1*" />
+          </Grid.ColumnDefinitions>
+
+          <ComboBox
+            Grid.Column="0" Margin="5,0"
+            HorizontalAlignment="Stretch" VerticalAlignment="Center"
+            ToolTip="Type of filter to apply"
+            ItemsSource="{Binding
+              Path=ViewModel.FilterTypes,
+              RelativeSource={RelativeSource
+                AncestorType=Window
+              }
+            }"
+            SelectedValue="OneOf"
+            SelectedValuePath="Key"
+            DisplayMemberPath="Value"
+            SelectionChanged="FilterTypeChangedImpl" />
+
+          <StackPanel Grid.Column="1" Orientation="Vertical">
+            <StackPanel.Resources>
+              <DataTemplate x:Key="ItemsTemplate">
+                <TextBlock Text="{Binding .}" />
+              </DataTemplate>
+            </StackPanel.Resources>
+
+            <TextBlock Text="{Binding Values.Count, StringFormat={}{0} value(s)}" />
+
+            <ui:ItemsRepeaterScrollHost MaxHeight="500">
+              <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                <ui:ItemsRepeater
+                  ItemTemplate="{StaticResource ItemsTemplate}"
+                  ItemsSource="{Binding Values}" />
+              </ScrollViewer>
+            </ui:ItemsRepeaterScrollHost>
+
+          </StackPanel>
+        </Grid>
+      </DataTemplate>
+
+      <dt:FilterDataTemplateSelector
+        x:Key="TemplateSelector"
+        DefaultDataTemplate="{StaticResource FilterEqualDataTemplate}"
+        FilterEqualDataTemplate="{StaticResource FilterEqualDataTemplate}"
+        FilterOneOfDataTemplate="{StaticResource FilterOneOfDataTemplate}" />
+    </ScrollViewer.Resources>
+
+    <ListView
+      Name="FilterListing"
+      HorizontalContentAlignment="Stretch"
+      ItemTemplateSelector="{StaticResource TemplateSelector}" />
+  </ScrollViewer>
+</rxui:ReactiveWindow>
